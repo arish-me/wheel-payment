@@ -1,0 +1,19 @@
+<div class="max-w-md mx-auto text-center">
+  <div class="bg-white shadow rounded-lg p-6">
+    <div class="mb-4">
+      <svg class="mx-auto h-12 w-12 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </div>
+    
+    <h3 class="text-lg font-medium text-gray-900 mb-2">Payment Cancelled</h3>
+    <p class="text-sm text-gray-500 mb-6">
+      Your payment was cancelled. You can try again anytime.
+    </p>
+    
+    <div class="flex justify-center space-x-3">
+      <%= link_to "Back to Project", project_path(@milestone&.project), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+      <%= link_to "Dashboard", dashboard_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
+    </div>
+  </div>
+</div>

@@ -24,6 +24,18 @@ Rails.application.routes.draw do
   # Reviews
   resources :reviews, only: [:create, :update]
 
+  # Payment routes
+  get 'payments/create_checkout_session', to: 'payments#create_checkout_session'
+  get 'payments/success', to: 'payments#success'
+  get 'payments/cancel', to: 'payments#cancel'
+
+  # Developer onboarding
+  get 'developer_onboarding/stripe_connect', to: 'developer_onboarding#stripe_connect'
+
+  # Webhooks
+  post 'webhooks/stripe', to: 'webhooks#stripe'
+  get 'webhooks/test/:milestone_id', to: 'webhooks#test_webhook', as: :test_webhook
+
   # Admin routes
   namespace :admin do
     get "dashboard/index"

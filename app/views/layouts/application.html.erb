@@ -7,9 +7,48 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <% if false %>
-      <%= javascript_importmap_tags %>
-    <% end %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+    <script>
+      function toggleEditForm(milestoneId) {
+        const formId = `editMilestoneForm${milestoneId}`
+        const form = document.getElementById(formId)
+        if (form) {
+          form.classList.toggle('hidden')
+        }
+      }
+      
+      function toggleDisputeForm(milestoneId) {
+        const formId = `disputeForm${milestoneId}`
+        const form = document.getElementById(formId)
+        if (form) {
+          form.classList.toggle('hidden')
+        }
+      }
+      
+      function toggleReviewForm(milestoneId) {
+        const formId = `reviewForm${milestoneId}`
+        const form = document.getElementById(formId)
+        if (form) {
+          form.classList.toggle('hidden')
+        }
+      }
+      
+      function setRating(rating) {
+        document.getElementById('rating-input').value = rating
+        
+        // Update star display
+        const stars = document.querySelectorAll('.rating-star')
+        stars.forEach((star, index) => {
+          if (index < rating) {
+            star.classList.remove('text-gray-300')
+            star.classList.add('text-yellow-400')
+          } else {
+            star.classList.remove('text-yellow-400')
+            star.classList.add('text-gray-300')
+          }
+        })
+      }
+    </script>
   </head>
 
   <body class="bg-gray-50">
@@ -30,8 +69,11 @@
                   <span class="text-sm text-gray-700">
                     Welcome, <%= current_user.email %>
                   </span>
-                  <%= link_to "Dashboard", dashboard_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
-                  <%= link_to "Projects", projects_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
+                                      <%= link_to "Dashboard", dashboard_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
+                    <%= link_to "Projects", projects_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
+                    <% if current_user.admin? %>
+                      <%= link_to "Admin", admin_dashboard_path, class: "text-sm text-red-600 hover:text-red-800" %>
+                    <% end %>
                   <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "text-sm text-red-600 hover:text-red-800" %>
                 </div>
               </div>

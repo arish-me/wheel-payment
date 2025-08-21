@@ -7,12 +7,13 @@ class MilestonesController < ApplicationController
 
   def create
     @milestone = @project.milestones.build(milestone_params)
-    
+    @milestone.status = :pending  # Set default status
     if @milestone.save
       redirect_to @project, notice: 'Milestone was successfully created.'
     else
       @milestones = @project.milestones.order(:created_at)
-      render 'projects/show', status: :unprocessable_entity
+      @new_milestone = @milestone  # Use the failed milestone to preserve form data and show errors
+      render 'projects/show', status: :unprocessable_content
     end
   end
 
@@ -22,7 +23,7 @@ class MilestonesController < ApplicationController
     else
       @milestones = @project.milestones.order(:created_at)
       @new_milestone = @project.milestones.build
-      render 'projects/show', status: :unprocessable_entity
+      render 'projects/show', status: :unprocessable_content
     end
   end
 
@@ -33,9 +34,8 @@ class MilestonesController < ApplicationController
 
   def fund
     if @milestone.can_be_funded?
-      # TODO: Integrate with Stripe payment
-      @milestone.update!(status: :funded)
-      redirect_to @project, notice: 'Milestone was successfully funded.'
+      # Redirect to Stripe Checkout instead of direct funding
+      redirect_to payments_create_checkout_session_path(milestone_id: @milestone.id)
     else
       redirect_to @project, alert: 'Milestone cannot be funded at this time.'
     end
@@ -52,9 +52,23 @@ class MilestonesController < ApplicationController
 
   def release
     if @milestone.can_be_released?
-      # TODO: Integrate with Stripe transfer
-      @milestone.update!(status: :released)
-      redirect_to @project, notice: 'Milestone was successfully released to developer.'
+      begin
+        stripe_service = StripeService.new
+        result = stripe_service.release_milestone(@milestone)
+
+        if result
+          @milestone.update!(status: :released)
+          redirect_to @project, notice: 'Milestone was successfully released to developer.'
+        else
+          redirect_to @project, alert: 'Failed to release milestone. Please try again.'
+        end
+      rescue Stripe::StripeError => e
+        Rails.logger.error "Stripe error during release: #{e.message}"
+        redirect_to @project, alert: 'Payment processing error. Please try again.'
+      rescue => e
+        Rails.logger.error "Release error: #{e.message}"
+        redirect_to @project, alert: 'An error occurred while releasing the milestone.'
+      end
     else
       redirect_to @project, alert: 'Milestone cannot be released at this time.'
     end
@@ -62,9 +76,23 @@ class MilestonesController < ApplicationController
 
   def refund
     if @milestone.can_be_refunded?
-      # TODO: Integrate with Stripe refund
-      @milestone.update!(status: :refunded)
-      redirect_to @project, notice: 'Milestone was successfully refunded.'
+      begin
+        stripe_service = StripeService.new
+        result = stripe_service.refund_milestone(@milestone)
+
+        if result
+          @milestone.update!(status: :refunded)
+          redirect_to @project, notice: 'Milestone was successfully refunded.'
+        else
+          redirect_to @project, alert: 'Failed to refund milestone. Please try again.'
+        end
+      rescue Stripe::StripeError => e
+        Rails.logger.error "Stripe error during refund: #{e.message}"
+        redirect_to @project, alert: 'Payment processing error. Please try again.'
+      rescue => e
+        Rails.logger.error "Refund error: #{e.message}"
+        redirect_to @project, alert: 'An error occurred while refunding the milestone.'
+      end
     else
       redirect_to @project, alert: 'Milestone cannot be refunded at this time.'
     end

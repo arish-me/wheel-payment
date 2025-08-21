@@ -30,4 +30,19 @@ export default class extends Controller {
       submitButton.value = "Creating..."
     }
   }
+
+  // Prevent Turbo from interfering with form submissions
+  preventTurbo(event) {
+    // Ensure form submits normally
+    event.target.setAttribute('data-turbo', 'false')
+  }
+
+  // Toggle edit form visibility
+  toggleEditForm(milestoneId) {
+    const formId = `editMilestoneForm${milestoneId}`
+    const form = document.getElementById(formId)
+    if (form) {
+      form.classList.toggle('hidden')
+    }
+  }
 }

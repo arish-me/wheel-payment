@@ -1,18 +1,18 @@
 # Wheel Payment - Freelance Escrow Platform
 
-A secure milestone-based freelance escrow platform built with Ruby on Rails 8, PostgreSQL, Tailwind CSS v4, and Stimulus.
+A milestone-based freelance escrow platform built with Ruby on Rails 8, PostgreSQL, Tailwind CSS v4, and Stimulus.
 
-## Features
+## 🚀 Features
 
-- **Milestone-based Payments**: Break down projects into milestones and fund them individually
-- **Secure Escrow**: Funds are held securely until work is completed
-- **Dispute Resolution**: Built-in dispute resolution system with admin mediation
-- **Reviews & Ratings**: Rate and review developers after project completion
-- **Multi-role Support**: Separate dashboards for clients, developers, and admins
-- **Stripe Integration**: Secure payment processing with Stripe
-- **Responsive Design**: Modern UI built with Tailwind CSS v4
+- **User Management**: Client, Developer, and Admin roles
+- **Project Management**: Create and manage freelance projects
+- **Milestone-based Payments**: Break down projects into fundable milestones
+- **Stripe Integration**: Secure payment processing with Stripe Connect
+- **Escrow System**: Funds held securely until milestone completion
+- **Admin Dashboard**: Platform overview and management tools
+- **Responsive Design**: Beautiful UI with Tailwind CSS
 
-## Tech Stack
+## 🛠 Tech Stack
 
 - **Backend**: Ruby on Rails 8
 - **Database**: PostgreSQL
@@ -20,18 +20,16 @@ A secure milestone-based freelance escrow platform built with Ruby on Rails 8, P
 - **Authentication**: Devise
 - **Payments**: Stripe
 - **Background Jobs**: Sidekiq
-- **Authorization**: Pundit
 - **Money Handling**: Money Rails
 
-## Prerequisites
+## 📋 Prerequisites
 
 - Ruby 3.2.2 or higher
 - PostgreSQL
-- Redis (for Sidekiq)
 - Node.js and Yarn
-- Stripe account
+- Stripe account (for payments)
 
-## Installation
+## 🔧 Installation
 
 1. **Clone the repository**
    ```bash
@@ -39,115 +37,150 @@ A secure milestone-based freelance escrow platform built with Ruby on Rails 8, P
    cd wheel-payment
    ```
 
-2. **Install Ruby dependencies**
+2. **Install dependencies**
    ```bash
    bundle install
-   ```
-
-3. **Install JavaScript dependencies**
-   ```bash
    yarn install
    ```
 
-4. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-5. **Set up the database**
+3. **Setup database**
    ```bash
    rails db:create
    rails db:migrate
    rails db:seed
    ```
 
-6. **Build assets**
+4. **Configure environment variables**
+   Create a `.env` file in the root directory with the following variables:
    ```bash
-   yarn build:css
-   yarn build
+   # Database
+   DATABASE_URL=postgresql://localhost/wheel_payment_development
+
+   # Stripe Configuration
+   STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+   STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+   STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+   # Platform Configuration
+   PLATFORM_FEE_PERCENT=5.0
+
+   # Rails Configuration
+   RAILS_ENV=development
+   SECRET_KEY_BASE=your_secret_key_base_here
    ```
 
-7. **Start the development server**
+5. **Start the development server**
    ```bash
    bin/dev
    ```
 
-## Environment Variables
+## 🔑 Stripe Setup
 
-Create a `.env` file with the following variables:
+### 1. Create a Stripe Account
+- Sign up at [stripe.com](https://stripe.com)
+- Get your API keys from the Stripe Dashboard
 
-```env
-# Database
-DATABASE_URL=postgresql://localhost/wheel_payment_development
+### 2. Configure Stripe Connect
+- Enable Stripe Connect in your Stripe Dashboard
+- Set up your Connect settings for marketplace payments
 
-# Stripe Configuration
-STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=whsec_your_stripe_webhook_secret
+### 3. Set Up Webhooks
+- In your Stripe Dashboard, go to Webhooks
+- Add endpoint: `https://yourdomain.com/webhooks/stripe`
+- Select these events:
+  - `payment_intent.succeeded`
+  - `payment_intent.payment_failed`
+  - `checkout.session.completed`
+  - `transfer.created`
+  - `charge.refunded`
+- Copy the webhook secret to your `.env` file
 
-# Platform Configuration
-PLATFORM_FEE_PERCENT=5
+### 4. Test Mode
+For development, use Stripe test keys:
+- Test Secret Key: `sk_test_...`
+- Test Publishable Key: `pk_test_...`
+- Test webhook secret: `whsec_...`
 
-# Application Configuration
-RAILS_ENV=development
-SECRET_KEY_BASE=your_secret_key_base_here
+## 🎯 Usage
 
-# Redis (for Sidekiq)
-REDIS_URL=redis://localhost:6379/0
-```
+### For Clients
+1. **Sign up** as a client
+2. **Create projects** and assign developers
+3. **Add milestones** with descriptions and amounts
+4. **Fund milestones** using Stripe Checkout
+5. **Review completed work** and release payments
+6. **Handle refunds** if needed
 
-## Usage
+### For Developers
+1. **Sign up** as a developer
+2. **Complete Stripe Connect onboarding** to receive payments
+3. **View assigned projects** and milestones
+4. **Mark milestones as completed** when work is done
+5. **Track payment status** and earnings
 
-### User Roles
+### For Admins
+1. **Access admin dashboard** at `/admin/dashboard`
+2. **Monitor platform statistics**
+3. **Manage disputes** and transactions
+4. **View user activity**
 
-1. **Client**: Create projects, fund milestones, release payments, raise disputes
-2. **Developer**: Work on projects, complete milestones, receive payments
-3. **Admin**: Manage disputes, monitor transactions, platform administration
+## 🔄 Payment Flow
 
-### Workflow
+1. **Client funds milestone** → Payment held in escrow
+2. **Developer completes work** → Marks milestone as completed
+3. **Client reviews work** → Approves and releases payment
+4. **Developer receives payment** → Minus platform fee
+5. **Platform collects fee** → Automatic fee deduction
 
-1. **Project Creation**: Client creates a project and assigns a developer
-2. **Milestone Setup**: Client breaks down the project into milestones
-3. **Funding**: Client funds individual milestones (money held in escrow)
-4. **Development**: Developer works on the milestone
-5. **Completion**: Developer marks milestone as complete
-6. **Release**: Client reviews and releases payment to developer
-7. **Review**: Client can rate and review the developer
+## 🧪 Testing
 
-## Development
-
-### Running Tests
 ```bash
+# Run tests
 bundle exec rspec
+
+# Run specific test file
+bundle exec rspec spec/models/user_spec.rb
 ```
 
-### Code Quality
+## 🚀 Deployment
+
+### Using Kamal (Recommended)
 ```bash
-bundle exec rubocop
-```
+# Initialize Kamal
+kamal init
 
-### Database
-```bash
-# Reset database
-rails db:reset
-
-# Run migrations
-rails db:migrate
-
-# Seed data
-rails db:seed
-```
-
-## Deployment
-
-The application is configured for deployment with Kamal. Update the deployment configuration in `config/deploy.yml` and deploy with:
-
-```bash
+# Deploy
 kamal deploy
 ```
 
-## Contributing
+### Manual Deployment
+1. Set up your production environment
+2. Configure production database
+3. Set production environment variables
+4. Run migrations
+5. Start the application
+
+## 📁 Project Structure
+
+```
+app/
+├── controllers/          # Application controllers
+├── models/              # ActiveRecord models
+├── services/            # Business logic services
+├── views/               # ERB templates
+└── javascript/          # Stimulus controllers
+
+config/
+├── routes.rb           # Application routes
+├── initializers/       # Configuration files
+└── environments/       # Environment-specific config
+
+db/
+├── migrate/            # Database migrations
+└── seeds.rb           # Seed data
+```
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -155,10 +188,24 @@ kamal deploy
 4. Add tests
 5. Submit a pull request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License.
 
-## Support
+## 🆘 Support
 
-For support, please open an issue in the GitHub repository.
+For support and questions:
+- Create an issue in the repository
+- Check the documentation
+- Review the code comments
+
+## 🔮 Roadmap
+
+- [ ] Dispute resolution system
+- [ ] Review and rating system
+- [ ] File upload functionality
+- [ ] Messaging system
+- [ ] Time tracking
+- [ ] Advanced reporting
+- [ ] Mobile app
+- [ ] Multi-currency support
