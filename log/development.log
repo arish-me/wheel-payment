@@ -1,0 +1,916 @@
+  [1m[35mSQL (1.4ms)[0m  [1m[35mSET search_path TO public[0m
+  [1m[35m (655.3ms)[0m  [1m[35mCREATE DATABASE "wheel_payment_development" ENCODING = 'unicode'[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mSET search_path TO public[0m
+  [1m[35m (855.6ms)[0m  [1m[35mCREATE DATABASE "wheel_payment_test" ENCODING = 'unicode'[0m
+  [1m[35m (14.8ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (4.8ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT pg_try_advisory_lock(8613523652537829795)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (9.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.8ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-08-21 08:35:57.789794', '2025-08-21 08:35:57.789798') RETURNING "key"[0m
+Migrating to DeviseCreateUsers (20250821083237)
+  [1m[36mTRANSACTION (14.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (11.9ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp(6), "remember_created_at" timestamp(6), "role" integer, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (3.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (3.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_reset_password_token" ON "users" ("reset_password_token")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250821083237') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateProjects (20250821083315)
+  [1m[36mTRANSACTION (5.7ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (50.9ms)[0m  [1m[35mCREATE TABLE "projects" ("id" bigserial primary key, "title" character varying, "description" text, "client_id" bigint NOT NULL, "developer_id" bigint NOT NULL, "status" integer, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_8d9657cec3"
+FOREIGN KEY ("client_id")
+  REFERENCES "clients" ("id")
+, CONSTRAINT "fk_rails_01655e2d16"
+FOREIGN KEY ("developer_id")
+  REFERENCES "developers" ("id")
+)[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (1.2ms)[0m  [1m[34mSELECT pg_advisory_unlock(8613523652537829795)[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(8613523652537829795)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateProjects (20250821083315)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (13.6ms)[0m  [1m[35mCREATE TABLE "projects" ("id" bigserial primary key, "title" character varying, "description" text, "client_id" bigint NOT NULL, "developer_id" bigint NOT NULL, "status" integer, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_8d9657cec3"
+FOREIGN KEY ("client_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_01655e2d16"
+FOREIGN KEY ("developer_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (18.0ms)[0m  [1m[35mCREATE INDEX "index_projects_on_client_id" ON "projects" ("client_id")[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE INDEX "index_projects_on_developer_id" ON "projects" ("developer_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250821083315') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateMilestones (20250821083340)
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (8.4ms)[0m  [1m[35mCREATE TABLE "milestones" ("id" bigserial primary key, "title" character varying, "description" text, "amount_cents" integer, "currency" character varying, "status" integer, "project_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_9bd0a0c791"
+FOREIGN KEY ("project_id")
+  REFERENCES "projects" ("id")
+)[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE INDEX "index_milestones_on_project_id" ON "milestones" ("project_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250821083340') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateTransactions (20250821083412)
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (27.8ms)[0m  [1m[35mCREATE TABLE "transactions" ("id" bigserial primary key, "milestone_id" bigint NOT NULL, "payment_provider" character varying, "provider_id" character varying, "status" integer, "fee_cents" integer, "net_amount_cents" integer, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_606fa5ab9c"
+FOREIGN KEY ("milestone_id")
+  REFERENCES "milestones" ("id")
+)[0m
+  [1m[35m (1.8ms)[0m  [1m[35mCREATE INDEX "index_transactions_on_milestone_id" ON "transactions" ("milestone_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250821083412') RETURNING "version"[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateDisputes (20250821083439)
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (7.9ms)[0m  [1m[35mCREATE TABLE "disputes" ("id" bigserial primary key, "milestone_id" bigint NOT NULL, "raised_by_id" bigint NOT NULL, "reason" text, "status" integer, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_8eabd73b4c"
+FOREIGN KEY ("milestone_id")
+  REFERENCES "milestones" ("id")
+, CONSTRAINT "fk_rails_19fcfdcf41"
+FOREIGN KEY ("raised_by_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE INDEX "index_disputes_on_milestone_id" ON "disputes" ("milestone_id")[0m
+  [1m[35m (2.6ms)[0m  [1m[35mCREATE INDEX "index_disputes_on_raised_by_id" ON "disputes" ("raised_by_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250821083439') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateReviews (20250821083506)
+  [1m[36mTRANSACTION (16.6ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (23.5ms)[0m  [1m[35mCREATE TABLE "reviews" ("id" bigserial primary key, "milestone_id" bigint NOT NULL, "reviewer_id" bigint NOT NULL, "reviewed_id" bigint NOT NULL, "rating" integer, "comment" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_2129bd5255"
+FOREIGN KEY ("milestone_id")
+  REFERENCES "milestones" ("id")
+, CONSTRAINT "fk_rails_007031d9cb"
+FOREIGN KEY ("reviewer_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_c57f5bfc10"
+FOREIGN KEY ("reviewed_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE INDEX "index_reviews_on_milestone_id" ON "reviews" ("milestone_id")[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE INDEX "index_reviews_on_reviewer_id" ON "reviews" ("reviewer_id")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_reviews_on_reviewed_id" ON "reviews" ("reviewed_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250821083506') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT pg_advisory_unlock(8613523652537829795)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (5.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mUser Load (30.0ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mUser Load (13.8ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mProject Load (2.6ms)[0m  [1m[34mSELECT "projects".* FROM "projects"[0m
+  [1m[36mMilestone Load (11.9ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones"[0m
+  [1m[36mTransaction Load (2.1ms)[0m  [1m[34mSELECT "transactions".* FROM "transactions"[0m
+  [1m[36mDispute Load (2.2ms)[0m  [1m[34mSELECT "disputes".* FROM "disputes"[0m
+  [1m[36mReview Load (1.8ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (15.7ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 2], ["created_at", "2025-08-21 08:44:51.850821"], ["updated_at", "2025-08-21 08:44:51.850821"]]
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (1.0ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 0], ["created_at", "2025-08-21 08:44:52.191346"], ["updated_at", "2025-08-21 08:44:52.191346"]]
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (14.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (15.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 0], ["created_at", "2025-08-21 08:44:52.521405"], ["updated_at", "2025-08-21 08:44:52.521405"]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 1], ["created_at", "2025-08-21 08:44:52.834178"], ["updated_at", "2025-08-21 08:44:52.834178"]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (14.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (15.9ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (1.5ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 1], ["created_at", "2025-08-21 08:44:53.172086"], ["updated_at", "2025-08-21 08:44:53.172086"]]
+  [1m[36mTRANSACTION (1.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProject Create (8.4ms)[0m  [1m[32mINSERT INTO "projects" ("title", "description", "client_id", "developer_id", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["title", "E-commerce Website Development"], ["description", "Build a modern e-commerce website with React frontend and Rails API backend. Include user authentication, product catalog, shopping cart, and payment integration."], ["client_id", 2], ["developer_id", 4], ["status", 1], ["created_at", "2025-08-21 08:44:53.236923"], ["updated_at", "2025-08-21 08:44:53.236923"]]
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (12.6ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProject Create (14.2ms)[0m  [1m[32mINSERT INTO "projects" ("title", "description", "client_id", "developer_id", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["title", "Mobile App for Food Delivery"], ["description", "Develop a cross-platform mobile app for food delivery service. Features include user registration, restaurant listings, order placement, real-time tracking, and payment processing."], ["client_id", 3], ["developer_id", 5], ["status", 1], ["created_at", "2025-08-21 08:44:53.252824"], ["updated_at", "2025-08-21 08:44:53.252824"]]
+  [1m[36mTRANSACTION (204.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProject Create (6.1ms)[0m  [1m[32mINSERT INTO "projects" ("title", "description", "client_id", "developer_id", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["title", "CRM System for Small Business"], ["description", "Create a customer relationship management system tailored for small businesses. Include contact management, lead tracking, sales pipeline, and reporting features."], ["client_id", 2], ["developer_id", 5], ["status", 0], ["created_at", "2025-08-21 08:44:53.487409"], ["updated_at", "2025-08-21 08:44:53.487409"]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (5.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (7.2ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Design and Wireframes"], ["description", "Create UI/UX designs and wireframes for the e-commerce website. Include homepage, product pages, cart, and checkout flow."], ["amount_cents", 250000], ["currency", "USD"], ["status", 1], ["project_id", 1], ["created_at", "2025-08-21 08:44:56.412650"], ["updated_at", "2025-08-21 08:44:56.412650"]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (1.8ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Frontend Development"], ["description", "Build the React frontend with responsive design, product catalog, and user authentication."], ["amount_cents", 500000], ["currency", "USD"], ["status", 0], ["project_id", 1], ["created_at", "2025-08-21 08:44:56.423198"], ["updated_at", "2025-08-21 08:44:56.423198"]]
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (1.0ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Backend API Development"], ["description", "Develop the Rails API backend with user management, product management, and order processing."], ["amount_cents", 400000], ["currency", "USD"], ["status", 0], ["project_id", 1], ["created_at", "2025-08-21 08:44:56.430080"], ["updated_at", "2025-08-21 08:44:56.430080"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (1.5ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "App Design and Prototyping"], ["description", "Design the mobile app interface and create interactive prototypes for user testing."], ["amount_cents", 300000], ["currency", "USD"], ["status", 2], ["project_id", 2], ["created_at", "2025-08-21 08:44:56.433985"], ["updated_at", "2025-08-21 08:44:56.433985"]]
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (1.8ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Core App Development"], ["description", "Develop the core app functionality including user authentication, restaurant listings, and basic navigation."], ["amount_cents", 600000], ["currency", "USD"], ["status", 1], ["project_id", 2], ["created_at", "2025-08-21 08:44:56.440407"], ["updated_at", "2025-08-21 08:44:56.440407"]]
+  [1m[36mTRANSACTION (1.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (1.3ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Order and Payment System"], ["description", "Implement order placement, payment processing, and real-time order tracking features."], ["amount_cents", 450000], ["currency", "USD"], ["status", 0], ["project_id", 2], ["created_at", "2025-08-21 08:44:56.449297"], ["updated_at", "2025-08-21 08:44:56.449297"]]
+  [1m[36mTRANSACTION (16.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "transactions" WHERE "transactions"."provider_id" = $1 LIMIT $2[0m  [["provider_id", "pi_sample_123"], ["LIMIT", 1]]
+  [1m[36mTransaction Create (2.3ms)[0m  [1m[32mINSERT INTO "transactions" ("milestone_id", "payment_provider", "provider_id", "status", "fee_cents", "net_amount_cents", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["milestone_id", 1], ["payment_provider", "0"], ["provider_id", "pi_sample_123"], ["status", 2], ["fee_cents", 12500], ["net_amount_cents", 237500], ["created_at", "2025-08-21 08:44:56.491834"], ["updated_at", "2025-08-21 08:44:56.491834"]]
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Exists? (17.8ms)[0m  [1m[34mSELECT 1 AS one FROM "transactions" WHERE "transactions"."provider_id" = $1 LIMIT $2[0m  [["provider_id", "pi_sample_456"], ["LIMIT", 1]]
+  [1m[36mTransaction Create (0.6ms)[0m  [1m[32mINSERT INTO "transactions" ("milestone_id", "payment_provider", "provider_id", "status", "fee_cents", "net_amount_cents", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["milestone_id", 4], ["payment_provider", "0"], ["provider_id", "pi_sample_456"], ["status", 2], ["fee_cents", 15000], ["net_amount_cents", 285000], ["created_at", "2025-08-21 08:44:56.520318"], ["updated_at", "2025-08-21 08:44:56.520318"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Exists? (1.5ms)[0m  [1m[34mSELECT 1 AS one FROM "transactions" WHERE "transactions"."provider_id" = $1 LIMIT $2[0m  [["provider_id", "pi_sample_789"], ["LIMIT", 1]]
+  [1m[36mTransaction Create (0.7ms)[0m  [1m[32mINSERT INTO "transactions" ("milestone_id", "payment_provider", "provider_id", "status", "fee_cents", "net_amount_cents", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["milestone_id", 5], ["payment_provider", "0"], ["provider_id", "pi_sample_789"], ["status", 1], ["fee_cents", 30000], ["net_amount_cents", 570000], ["created_at", "2025-08-21 08:44:56.529731"], ["updated_at", "2025-08-21 08:44:56.529731"]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mUser Load (1.5ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Destroy (4.1ms)[0m  [1m[31mDELETE FROM "users" WHERE "users"."id" = $1[0m  [["id", 1]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Destroy (22.3ms)[0m  [1m[31mDELETE FROM "users" WHERE "users"."id" = $1[0m  [["id", 2]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::SchemaMigration Load (4.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mReview Load (18.2ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews"[0m
+  [1m[36mDispute Load (0.9ms)[0m  [1m[34mSELECT "disputes".* FROM "disputes"[0m
+  [1m[36mTransaction Load (1.7ms)[0m  [1m[34mSELECT "transactions".* FROM "transactions"[0m
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Destroy (4.9ms)[0m  [1m[31mDELETE FROM "transactions" WHERE "transactions"."id" = $1[0m  [["id", 1]]
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Destroy (0.6ms)[0m  [1m[31mDELETE FROM "transactions" WHERE "transactions"."id" = $1[0m  [["id", 2]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Destroy (0.5ms)[0m  [1m[31mDELETE FROM "transactions" WHERE "transactions"."id" = $1[0m  [["id", 3]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mMilestone Load (1.0ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Load (0.7ms)[0m  [1m[34mSELECT "transactions".* FROM "transactions" WHERE "transactions"."milestone_id" = $1[0m  [["milestone_id", 1]]
+  [1m[36mDispute Load (0.4ms)[0m  [1m[34mSELECT "disputes".* FROM "disputes" WHERE "disputes"."milestone_id" = $1[0m  [["milestone_id", 1]]
+  [1m[36mReview Load (0.5ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."milestone_id" = $1 LIMIT $2[0m  [["milestone_id", 1], ["LIMIT", 1]]
+  [1m[36mMilestone Destroy (1.1ms)[0m  [1m[31mDELETE FROM "milestones" WHERE "milestones"."id" = $1[0m  [["id", 1]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Load (0.6ms)[0m  [1m[34mSELECT "transactions".* FROM "transactions" WHERE "transactions"."milestone_id" = $1[0m  [["milestone_id", 2]]
+  [1m[36mDispute Load (0.2ms)[0m  [1m[34mSELECT "disputes".* FROM "disputes" WHERE "disputes"."milestone_id" = $1[0m  [["milestone_id", 2]]
+  [1m[36mReview Load (0.2ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."milestone_id" = $1 LIMIT $2[0m  [["milestone_id", 2], ["LIMIT", 1]]
+  [1m[36mMilestone Destroy (0.5ms)[0m  [1m[31mDELETE FROM "milestones" WHERE "milestones"."id" = $1[0m  [["id", 2]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Load (0.5ms)[0m  [1m[34mSELECT "transactions".* FROM "transactions" WHERE "transactions"."milestone_id" = $1[0m  [["milestone_id", 3]]
+  [1m[36mDispute Load (0.3ms)[0m  [1m[34mSELECT "disputes".* FROM "disputes" WHERE "disputes"."milestone_id" = $1[0m  [["milestone_id", 3]]
+  [1m[36mReview Load (0.8ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."milestone_id" = $1 LIMIT $2[0m  [["milestone_id", 3], ["LIMIT", 1]]
+  [1m[36mMilestone Destroy (16.3ms)[0m  [1m[31mDELETE FROM "milestones" WHERE "milestones"."id" = $1[0m  [["id", 3]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Load (0.5ms)[0m  [1m[34mSELECT "transactions".* FROM "transactions" WHERE "transactions"."milestone_id" = $1[0m  [["milestone_id", 4]]
+  [1m[36mDispute Load (0.2ms)[0m  [1m[34mSELECT "disputes".* FROM "disputes" WHERE "disputes"."milestone_id" = $1[0m  [["milestone_id", 4]]
+  [1m[36mReview Load (0.2ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."milestone_id" = $1 LIMIT $2[0m  [["milestone_id", 4], ["LIMIT", 1]]
+  [1m[36mMilestone Destroy (0.6ms)[0m  [1m[31mDELETE FROM "milestones" WHERE "milestones"."id" = $1[0m  [["id", 4]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Load (0.5ms)[0m  [1m[34mSELECT "transactions".* FROM "transactions" WHERE "transactions"."milestone_id" = $1[0m  [["milestone_id", 5]]
+  [1m[36mDispute Load (0.2ms)[0m  [1m[34mSELECT "disputes".* FROM "disputes" WHERE "disputes"."milestone_id" = $1[0m  [["milestone_id", 5]]
+  [1m[36mReview Load (0.3ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."milestone_id" = $1 LIMIT $2[0m  [["milestone_id", 5], ["LIMIT", 1]]
+  [1m[36mMilestone Destroy (0.5ms)[0m  [1m[31mDELETE FROM "milestones" WHERE "milestones"."id" = $1[0m  [["id", 5]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Load (0.5ms)[0m  [1m[34mSELECT "transactions".* FROM "transactions" WHERE "transactions"."milestone_id" = $1[0m  [["milestone_id", 6]]
+  [1m[36mDispute Load (0.2ms)[0m  [1m[34mSELECT "disputes".* FROM "disputes" WHERE "disputes"."milestone_id" = $1[0m  [["milestone_id", 6]]
+  [1m[36mReview Load (0.3ms)[0m  [1m[34mSELECT "reviews".* FROM "reviews" WHERE "reviews"."milestone_id" = $1 LIMIT $2[0m  [["milestone_id", 6], ["LIMIT", 1]]
+  [1m[36mMilestone Destroy (0.5ms)[0m  [1m[31mDELETE FROM "milestones" WHERE "milestones"."id" = $1[0m  [["id", 6]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mProject Load (1.7ms)[0m  [1m[34mSELECT "projects".* FROM "projects"[0m
+  [1m[36mTRANSACTION (14.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Load (15.9ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 1]]
+  [1m[36mProject Destroy (0.8ms)[0m  [1m[31mDELETE FROM "projects" WHERE "projects"."id" = $1[0m  [["id", 1]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Load (0.6ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 2]]
+  [1m[36mProject Destroy (0.8ms)[0m  [1m[31mDELETE FROM "projects" WHERE "projects"."id" = $1[0m  [["id", 2]]
+  [1m[36mTRANSACTION (3.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Load (0.6ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 3]]
+  [1m[36mProject Destroy (0.5ms)[0m  [1m[31mDELETE FROM "projects" WHERE "projects"."id" = $1[0m  [["id", 3]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Load (1.2ms)[0m  [1m[34mSELECT "users".* FROM "users"[0m
+  [1m[36mTRANSACTION (8.9ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Destroy (11.2ms)[0m  [1m[31mDELETE FROM "users" WHERE "users"."id" = $1[0m  [["id", 2]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Destroy (1.1ms)[0m  [1m[31mDELETE FROM "users" WHERE "users"."id" = $1[0m  [["id", 3]]
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Destroy (1.3ms)[0m  [1m[31mDELETE FROM "users" WHERE "users"."id" = $1[0m  [["id", 4]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Destroy (2.3ms)[0m  [1m[31mDELETE FROM "users" WHERE "users"."id" = $1[0m  [["id", 5]]
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (14.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (15.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.7ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 2], ["created_at", "2025-08-21 08:46:43.471078"], ["updated_at", "2025-08-21 08:46:43.471078"]]
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.6ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 0], ["created_at", "2025-08-21 08:46:43.788666"], ["updated_at", "2025-08-21 08:46:43.788666"]]
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (12.9ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (14.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.5ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 0], ["created_at", "2025-08-21 08:46:44.120508"], ["updated_at", "2025-08-21 08:46:44.120508"]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.7ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 1], ["created_at", "2025-08-21 08:46:44.433135"], ["updated_at", "2025-08-21 08:46:44.433135"]]
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mCACHE User Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.4ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["role", 1], ["created_at", "2025-08-21 08:46:44.742737"], ["updated_at", "2025-08-21 08:46:44.742737"]]
+  [1m[36mTRANSACTION (5.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (11.7ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProject Create (23.5ms)[0m  [1m[32mINSERT INTO "projects" ("title", "description", "client_id", "developer_id", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["title", "E-commerce Website Development"], ["description", "Build a modern e-commerce website with React frontend and Rails API backend. Include user authentication, product catalog, shopping cart, and payment integration."], ["client_id", 7], ["developer_id", 9], ["status", 1], ["created_at", "2025-08-21 08:46:44.754106"], ["updated_at", "2025-08-21 08:46:44.754106"]]
+  [1m[36mTRANSACTION (4.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProject Create (0.9ms)[0m  [1m[32mINSERT INTO "projects" ("title", "description", "client_id", "developer_id", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["title", "Mobile App for Food Delivery"], ["description", "Develop a cross-platform mobile app for food delivery service. Features include user registration, restaurant listings, order placement, real-time tracking, and payment processing."], ["client_id", 8], ["developer_id", 10], ["status", 1], ["created_at", "2025-08-21 08:46:44.785409"], ["updated_at", "2025-08-21 08:46:44.785409"]]
+  [1m[36mTRANSACTION (5.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (18.8ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProject Create (76.5ms)[0m  [1m[32mINSERT INTO "projects" ("title", "description", "client_id", "developer_id", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["title", "CRM System for Small Business"], ["description", "Create a customer relationship management system tailored for small businesses. Include contact management, lead tracking, sales pipeline, and reporting features."], ["client_id", 7], ["developer_id", 10], ["status", 0], ["created_at", "2025-08-21 08:46:44.793651"], ["updated_at", "2025-08-21 08:46:44.793651"]]
+  [1m[36mTRANSACTION (122.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (13.9ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (26.2ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Design and Wireframes"], ["description", "Create UI/UX designs and wireframes for the e-commerce website. Include homepage, product pages, cart, and checkout flow."], ["amount_cents", 250000], ["currency", "USD"], ["status", 1], ["project_id", 4], ["created_at", "2025-08-21 08:46:45.603194"], ["updated_at", "2025-08-21 08:46:45.603194"]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (1.9ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Frontend Development"], ["description", "Build the React frontend with responsive design, product catalog, and user authentication."], ["amount_cents", 500000], ["currency", "USD"], ["status", 0], ["project_id", 4], ["created_at", "2025-08-21 08:46:45.634220"], ["updated_at", "2025-08-21 08:46:45.634220"]]
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (0.9ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Backend API Development"], ["description", "Develop the Rails API backend with user management, product management, and order processing."], ["amount_cents", 400000], ["currency", "USD"], ["status", 0], ["project_id", 4], ["created_at", "2025-08-21 08:46:45.641756"], ["updated_at", "2025-08-21 08:46:45.641756"]]
+  [1m[36mTRANSACTION (6.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (13.7ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (14.4ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "App Design and Prototyping"], ["description", "Design the mobile app interface and create interactive prototypes for user testing."], ["amount_cents", 300000], ["currency", "USD"], ["status", 2], ["project_id", 5], ["created_at", "2025-08-21 08:46:45.652749"], ["updated_at", "2025-08-21 08:46:45.652749"]]
+  [1m[36mTRANSACTION (3.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (1.1ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Core App Development"], ["description", "Develop the core app functionality including user authentication, restaurant listings, and basic navigation."], ["amount_cents", 600000], ["currency", "USD"], ["status", 1], ["project_id", 5], ["created_at", "2025-08-21 08:46:45.675122"], ["updated_at", "2025-08-21 08:46:45.675122"]]
+  [1m[36mTRANSACTION (1.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Create (1.1ms)[0m  [1m[32mINSERT INTO "milestones" ("title", "description", "amount_cents", "currency", "status", "project_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["title", "Order and Payment System"], ["description", "Implement order placement, payment processing, and real-time order tracking features."], ["amount_cents", 450000], ["currency", "USD"], ["status", 0], ["project_id", 5], ["created_at", "2025-08-21 08:46:45.681911"], ["updated_at", "2025-08-21 08:46:45.681911"]]
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "transactions" WHERE "transactions"."provider_id" = $1 LIMIT $2[0m  [["provider_id", "pi_sample_123"], ["LIMIT", 1]]
+  [1m[36mTransaction Create (1.1ms)[0m  [1m[32mINSERT INTO "transactions" ("milestone_id", "payment_provider", "provider_id", "status", "fee_cents", "net_amount_cents", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["milestone_id", 7], ["payment_provider", "0"], ["provider_id", "pi_sample_123"], ["status", 2], ["fee_cents", 12500], ["net_amount_cents", 237500], ["created_at", "2025-08-21 08:46:45.693003"], ["updated_at", "2025-08-21 08:46:45.693003"]]
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (15.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Exists? (16.3ms)[0m  [1m[34mSELECT 1 AS one FROM "transactions" WHERE "transactions"."provider_id" = $1 LIMIT $2[0m  [["provider_id", "pi_sample_456"], ["LIMIT", 1]]
+  [1m[36mTransaction Create (1.4ms)[0m  [1m[32mINSERT INTO "transactions" ("milestone_id", "payment_provider", "provider_id", "status", "fee_cents", "net_amount_cents", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["milestone_id", 10], ["payment_provider", "0"], ["provider_id", "pi_sample_456"], ["status", 2], ["fee_cents", 15000], ["net_amount_cents", 285000], ["created_at", "2025-08-21 08:46:45.721295"], ["updated_at", "2025-08-21 08:46:45.721295"]]
+  [1m[36mTRANSACTION (1.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTransaction Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "transactions" WHERE "transactions"."provider_id" = $1 LIMIT $2[0m  [["provider_id", "pi_sample_789"], ["LIMIT", 1]]
+  [1m[36mTransaction Create (1.5ms)[0m  [1m[32mINSERT INTO "transactions" ("milestone_id", "payment_provider", "provider_id", "status", "fee_cents", "net_amount_cents", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["milestone_id", 11], ["payment_provider", "0"], ["provider_id", "pi_sample_789"], ["status", 1], ["fee_cents", 30000], ["net_amount_cents", 570000], ["created_at", "2025-08-21 08:46:45.731844"], ["updated_at", "2025-08-21 08:46:45.731844"]]
+  [1m[36mTRANSACTION (1.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Update (2.6ms)[0m  [1m[33mUPDATE "milestones" SET "status" = $1, "updated_at" = $2 WHERE "milestones"."id" = $3[0m  [["status", 3], ["updated_at", "2025-08-21 08:46:45.740612"], ["id", 10]]
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (6.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mReview Create (9.2ms)[0m  [1m[32mINSERT INTO "reviews" ("milestone_id", "reviewer_id", "reviewed_id", "rating", "comment", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["milestone_id", 10], ["reviewer_id", 8], ["reviewed_id", 10], ["rating", 5], ["comment", "Excellent work on the app design! The prototypes were very well thought out and the user experience is intuitive. Highly recommend this developer."], ["created_at", "2025-08-21 08:46:45.760642"], ["updated_at", "2025-08-21 08:46:45.760642"]]
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[35mCOMMIT[0m
+Started GET "/" for ::1 at 2025-08-21 14:17:31 +0530
+  [1m[36mActiveRecord::SchemaMigration Load (18.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 1.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 19.7ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 467ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 119.8ms)
+
+
+
+NameError - undefined local variable or method `javascript_importmap_tags' for #<ActionView::Base:0x00000000011cd8>:
+  app/views/layouts/application.html.erb:10
+
+Started GET "/" for ::1 at 2025-08-21 14:17:32 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.7ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 5ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+
+NameError - undefined local variable or method `javascript_importmap_tags' for #<ActionView::Base:0x00000000014118>:
+  app/views/layouts/application.html.erb:10
+
+Started POST "/__better_errors/d2fd5d73a7e7e0bf/variables" for ::1 at 2025-08-21 14:17:32 +0530
+Started GET "/logo-pwa.png" for ::1 at 2025-08-21 14:17:39 +0530
+  
+ActionController::RoutingError (No route matches [GET] "/logo-pwa.png"):
+  
+Started GET "/" for ::1 at 2025-08-21 14:17:39 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.5ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 2ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+
+NameError - undefined local variable or method `javascript_importmap_tags' for #<ActionView::Base:0x00000000014578>:
+  app/views/layouts/application.html.erb:10
+
+Writing application-77c1bf31.js.map
+Writing application-bafbcce5.css
+Writing application-9da6cb0f.js
+Writing application.tailwind-ee41ae41.css
+Writing stimulus.min-4b1e420e.js
+Writing stimulus-d59b3b7f.js
+Writing stimulus.min-2395e199.js.map
+Writing stimulus-importmap-autoloader-64cc03e1.js
+Writing stimulus-autoloader-9d447422.js
+Writing stimulus-loading-1fc53fe7.js
+Writing turbo.min-5f3b7fda.js.map
+Writing turbo-a1e3a50a.js
+Writing turbo.min-3a2e143f.js
+Writing actiontext.esm-f1c04d34.js
+Writing actiontext-a4ee937e.js
+Writing trix-4b540cb5.js
+Writing trix-65afdb1d.css
+Writing action_cable-5212cfee.js
+Writing actioncable.esm-e0ec9819.js
+Writing actioncable-ac25813f.js
+Writing activestorage.esm-f2909226.js
+Writing activestorage-32201f68.js
+Writing rails-ujs.esm-e925103b.js
+Writing rails-ujs-20eaf715.js
+Started GET "/" for ::1 at 2025-08-21 14:18:13 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.8ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 21ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+
+NameError - undefined local variable or method `javascript_importmap_tags' for #<ActionView::Base:0x00000000014668>:
+  app/views/layouts/application.html.erb:10
+
+Started POST "/__better_errors/58a650ab5798d4ed/variables" for ::1 at 2025-08-21 14:18:13 +0530
+Started GET "/" for ::1 at 2025-08-21 14:18:14 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.7ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 2ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+
+NameError - undefined local variable or method `javascript_importmap_tags' for #<ActionView::Base:0x00000000014708>:
+  app/views/layouts/application.html.erb:10
+
+Started POST "/__better_errors/398bc7203faef2e7/variables" for ::1 at 2025-08-21 14:18:14 +0530
+Started GET "/" for ::1 at 2025-08-21 14:19:45 +0530
+  [1m[36mActiveRecord::SchemaMigration Load (2.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 2.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 14.7ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 494ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 119.7ms)
+
+
+
+NameError - undefined local variable or method `javascript_importmap_tags' for #<ActionView::Base:0x00000000011c88>:
+  app/views/layouts/application.html.erb:10
+
+Started GET "/" for ::1 at 2025-08-21 14:19:46 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.2ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 3ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+
+NameError - undefined local variable or method `javascript_importmap_tags' for #<ActionView::Base:0x000000000140c8>:
+  app/views/layouts/application.html.erb:10
+
+Started POST "/__better_errors/f77f28544755cfee/variables" for ::1 at 2025-08-21 14:19:46 +0530
+Started GET "/" for ::1 at 2025-08-21 14:19:53 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 1.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.0ms | GC: 0.0ms)
+Completed 200 OK in 12ms (Views: 10.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for ::1 at 2025-08-21 14:19:53 +0530
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started GET "/" for ::1 at 2025-08-21 14:20:12 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.4ms | GC: 0.0ms)
+Completed 200 OK in 6ms (Views: 4.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/sign_up" for ::1 at 2025-08-21 14:20:17 +0530
+Processing by Devise::RegistrationsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/registrations/new.html.erb within layouts/application
+  Rendered /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/shared/_error_messages.html.erb (Duration: 0.5ms | GC: 0.0ms)
+  Rendered /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/shared/_links.html.erb (Duration: 1.0ms | GC: 0.0ms)
+  Rendered /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/registrations/new.html.erb within layouts/application (Duration: 19.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 20.7ms | GC: 0.0ms)
+Completed 200 OK in 61ms (Views: 26.2ms | ActiveRecord: 15.2ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/sign_up" for ::1 at 2025-08-21 14:20:19 +0530
+Processing by Devise::RegistrationsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/registrations/new.html.erb within layouts/application
+  Rendered /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/shared/_error_messages.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/shared/_links.html.erb (Duration: 0.1ms | GC: 0.0ms)
+  Rendered /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/registrations/new.html.erb within layouts/application (Duration: 1.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.5ms | GC: 0.0ms)
+Completed 200 OK in 4ms (Views: 2.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/sign_in" for ::1 at 2025-08-21 14:20:37 +0530
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/sessions/new.html.erb within layouts/application
+  Rendered /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/shared/_links.html.erb (Duration: 0.3ms | GC: 0.0ms)
+  Rendered /Users/arish/.rbenv/versions/3.2.2/lib/ruby/gems/3.2.0/gems/devise-4.9.4/app/views/devise/sessions/new.html.erb within layouts/application (Duration: 7.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 8.3ms | GC: 0.0ms)
+Completed 200 OK in 15ms (Views: 10.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/users/sign_in" for ::1 at 2025-08-21 14:20:52 +0530
+Processing by Devise::SessionsController#create as HTML
+  Parameters: {"authenticity_token"=>"[FILTERED]", "user"=>{"email"=>"[FILTERED]", "password"=>"[FILTERED]", "remember_me"=>"0"}, "commit"=>"Log in"}
+  [1m[36mUser Load (1.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+Redirected to http://localhost:3000/
+Completed 303 See Other in 325ms (ActiveRecord: 2.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for ::1 at 2025-08-21 14:20:52 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.7ms | GC: 0.0ms)
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendered layout layouts/application.html.erb (Duration: 4.1ms | GC: 0.0ms)
+Completed 200 OK in 5ms (Views: 4.1ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/dashboard" for ::1 at 2025-08-21 14:20:57 +0530
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (4.0ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (1.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.5ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.5ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 61.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 63.0ms | GC: 0.0ms)
+Completed 200 OK in 121ms (Views: 60.8ms | ActiveRecord: 15.1ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/dashboard" for ::1 at 2025-08-21 14:21:26 +0530
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (0.5ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.2ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.3ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 8.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 9.2ms | GC: 0.0ms)
+Completed 200 OK in 14ms (Views: 7.7ms | ActiveRecord: 3.0ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/dashboard" for ::1 at 2025-08-21 14:21:33 +0530
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (1.2ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.3ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 8.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 9.6ms | GC: 0.0ms)
+Completed 200 OK in 15ms (Views: 8.0ms | ActiveRecord: 3.6ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/dashboard" for ::1 at 2025-08-21 14:21:34 +0530
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (0.8ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (1.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.5ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.8ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 13.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 14.2ms | GC: 0.0ms)
+Completed 200 OK in 19ms (Views: 10.7ms | ActiveRecord: 5.1ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/dashboard" for ::1 at 2025-08-21 14:33:07 +0530
+  [1m[36mActiveRecord::SchemaMigration Load (1.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (1.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (1.2ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.4ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.5ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 31.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 34.5ms | GC: 0.0ms)
+Completed 200 OK in 389ms (Views: 37.4ms | ActiveRecord: 42.1ms (9 queries, 0 cached) | GC: 39.5ms)
+
+
+Writing application-77c1bf31.js.map
+Writing application-96340935.css
+Writing application-9da6cb0f.js
+Writing application.tailwind-ee41ae41.css
+Writing stimulus.min-4b1e420e.js
+Writing stimulus-d59b3b7f.js
+Writing stimulus.min-2395e199.js.map
+Writing stimulus-importmap-autoloader-64cc03e1.js
+Writing stimulus-autoloader-9d447422.js
+Writing stimulus-loading-1fc53fe7.js
+Writing turbo.min-5f3b7fda.js.map
+Writing turbo-a1e3a50a.js
+Writing turbo.min-3a2e143f.js
+Writing actiontext.esm-f1c04d34.js
+Writing actiontext-a4ee937e.js
+Writing trix-4b540cb5.js
+Writing trix-65afdb1d.css
+Writing action_cable-5212cfee.js
+Writing actioncable.esm-e0ec9819.js
+Writing actioncable-ac25813f.js
+Writing activestorage.esm-f2909226.js
+Writing activestorage-32201f68.js
+Writing rails-ujs.esm-e925103b.js
+Writing rails-ujs-20eaf715.js
+Started GET "/dashboard" for ::1 at 2025-08-21 14:36:19 +0530
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (0.5ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.4ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.4ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 8.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 9.9ms | GC: 0.0ms)
+Completed 200 OK in 20ms (Views: 8.2ms | ActiveRecord: 3.1ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/assets/application-bafbcce5.css" for ::1 at 2025-08-21 14:36:19 +0530
+Started GET "/dashboard" for ::1 at 2025-08-21 14:36:20 +0530
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (0.6ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.5ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.8ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 15.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 16.8ms | GC: 0.0ms)
+Completed 200 OK in 24ms (Views: 14.0ms | ActiveRecord: 4.9ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/assets/application-bafbcce5.css" for ::1 at 2025-08-21 14:36:20 +0530
+Started GET "/dashboard" for ::1 at 2025-08-21 14:36:47 +0530
+  [1m[36mActiveRecord::SchemaMigration Load (2.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (1.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (1.1ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.4ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.4ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 26.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 29.6ms | GC: 0.0ms)
+Completed 200 OK in 440ms (Views: 31.9ms | ActiveRecord: 68.4ms (9 queries, 0 cached) | GC: 101.0ms)
+
+
+Started GET "/projects/new" for ::1 at 2025-08-21 14:36:49 +0530
+Processing by ProjectsController#new as HTML
+  [1m[36mUser Load (0.8ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering projects/new.html.erb within layouts/application
+  [1m[36mUser Load (0.8ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."role" = $1[0m  [["role", 1]]
+  Rendered projects/new.html.erb within layouts/application (Duration: 19.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 20.0ms | GC: 0.0ms)
+Completed 200 OK in 37ms (Views: 21.4ms | ActiveRecord: 1.7ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/projects" for ::1 at 2025-08-21 14:36:52 +0530
+Processing by ProjectsController#create as HTML
+  Parameters: {"authenticity_token"=>"[FILTERED]", "project"=>{"title"=>"", "description"=>"", "developer_id"=>"", "status"=>"draft"}, "commit"=>"Create Project"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Load (0.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  Rendering layout layouts/application.html.erb
+  Rendering projects/new.html.erb within layouts/application
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."role" = $1[0m  [["role", 1]]
+  Rendered projects/new.html.erb within layouts/application (Duration: 8.2ms | GC: 1.1ms)
+  Rendered layout layouts/application.html.erb (Duration: 8.9ms | GC: 1.1ms)
+Completed 422 Unprocessable Content in 17ms (Views: 9.1ms | ActiveRecord: 1.8ms (3 queries, 0 cached) | GC: 1.9ms)
+
+
+Started GET "/projects" for ::1 at 2025-08-21 14:36:54 +0530
+Processing by ProjectsController#index as HTML
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering projects/index.html.erb within layouts/application
+  [1m[36mProject Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "projects" WHERE "projects"."client_id" = $1 LIMIT $2[0m  [["client_id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.3ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Sum (0.3ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mMilestone Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  [1m[36mMilestone Sum (0.3ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendered projects/index.html.erb within layouts/application (Duration: 12.7ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 13.5ms | GC: 0.3ms)
+Completed 200 OK in 18ms (Views: 11.4ms | ActiveRecord: 2.9ms (11 queries, 1 cached) | GC: 1.6ms)
+
+
+Started GET "/projects/4" for ::1 at 2025-08-21 14:37:00 +0530
+Processing by ProjectsController#show as HTML
+  Parameters: {"id"=>"4"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.5ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering projects/show.html.erb within layouts/application
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 9], ["LIMIT", 1]]
+  [1m[36mMilestone Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" = $1 LIMIT $2[0m  [["project_id", 4], ["LIMIT", 1]]
+  [1m[36mMilestone Load (2.0ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1 ORDER BY "milestones"."created_at" ASC[0m  [["project_id", 4]]
+  Rendered projects/show.html.erb within layouts/application (Duration: 15.2ms | GC: 0.7ms)
+  Rendered layout layouts/application.html.erb (Duration: 16.0ms | GC: 0.7ms)
+Completed 200 OK in 22ms (Views: 13.6ms | ActiveRecord: 3.7ms (6 queries, 0 cached) | GC: 1.0ms)
+
+
+Started POST "/projects/4/milestones/8/fund" for ::1 at 2025-08-21 14:37:05 +0530
+Processing by MilestonesController#fund as HTML
+  Parameters: {"authenticity_token"=>"[FILTERED]", "project_id"=>"4", "id"=>"8"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.4ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mMilestone Load (0.7ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1 AND "milestones"."id" = $2 LIMIT $3[0m  [["project_id", 4], ["id", 8], ["LIMIT", 1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Update (1.0ms)[0m  [1m[33mUPDATE "milestones" SET "status" = $1, "updated_at" = $2 WHERE "milestones"."id" = $3[0m  [["status", 1], ["updated_at", "2025-08-21 09:07:06.007909"], ["id", 8]]
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+Redirected to http://localhost:3000/projects/4
+Completed 302 Found in 15ms (ActiveRecord: 4.1ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/projects/4" for ::1 at 2025-08-21 14:37:06 +0530
+Processing by ProjectsController#show as HTML
+  Parameters: {"id"=>"4"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering projects/show.html.erb within layouts/application
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 9], ["LIMIT", 1]]
+  [1m[36mMilestone Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" = $1 LIMIT $2[0m  [["project_id", 4], ["LIMIT", 1]]
+  [1m[36mMilestone Load (0.4ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1 ORDER BY "milestones"."created_at" ASC[0m  [["project_id", 4]]
+  Rendered projects/show.html.erb within layouts/application (Duration: 11.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 13.0ms | GC: 0.0ms)
+Completed 200 OK in 18ms (Views: 12.3ms | ActiveRecord: 2.1ms (6 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/projects/4/milestones/8/refund" for ::1 at 2025-08-21 14:37:11 +0530
+Processing by MilestonesController#refund as HTML
+  Parameters: {"authenticity_token"=>"[FILTERED]", "project_id"=>"4", "id"=>"8"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.4ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mMilestone Load (0.5ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1 AND "milestones"."id" = $2 LIMIT $3[0m  [["project_id", 4], ["id", 8], ["LIMIT", 1]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mMilestone Update (1.1ms)[0m  [1m[33mUPDATE "milestones" SET "status" = $1, "updated_at" = $2 WHERE "milestones"."id" = $3[0m  [["status", 4], ["updated_at", "2025-08-21 09:07:11.886194"], ["id", 8]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+Redirected to http://localhost:3000/projects/4
+Completed 302 Found in 13ms (ActiveRecord: 3.4ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/projects/4" for ::1 at 2025-08-21 14:37:11 +0530
+Processing by ProjectsController#show as HTML
+  Parameters: {"id"=>"4"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.9ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering projects/show.html.erb within layouts/application
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 9], ["LIMIT", 1]]
+  [1m[36mMilestone Exists? (2.7ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" = $1 LIMIT $2[0m  [["project_id", 4], ["LIMIT", 1]]
+  [1m[36mMilestone Load (0.5ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1 ORDER BY "milestones"."created_at" ASC[0m  [["project_id", 4]]
+  Rendered projects/show.html.erb within layouts/application (Duration: 11.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 12.0ms | GC: 0.0ms)
+Completed 200 OK in 20ms (Views: 8.9ms | ActiveRecord: 4.9ms (6 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/projects/4" for ::1 at 2025-08-21 14:37:14 +0530
+Processing by ProjectsController#show as HTML
+  Parameters: {"id"=>"4"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = $1 LIMIT $2[0m  [["id", 4], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering projects/show.html.erb within layouts/application
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 9], ["LIMIT", 1]]
+  [1m[36mMilestone Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" = $1 LIMIT $2[0m  [["project_id", 4], ["LIMIT", 1]]
+  [1m[36mMilestone Load (0.4ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" = $1 ORDER BY "milestones"."created_at" ASC[0m  [["project_id", 4]]
+  Rendered projects/show.html.erb within layouts/application (Duration: 7.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.8ms | GC: 0.0ms)
+Completed 200 OK in 12ms (Views: 7.2ms | ActiveRecord: 1.6ms (6 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/dashboard" for ::1 at 2025-08-21 14:37:17 +0530
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (0.5ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.3ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 8.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 9.7ms | GC: 0.0ms)
+Completed 200 OK in 15ms (Views: 7.9ms | ActiveRecord: 3.2ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/projects" for ::1 at 2025-08-21 14:37:18 +0530
+Processing by ProjectsController#index as HTML
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering projects/index.html.erb within layouts/application
+  [1m[36mProject Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "projects" WHERE "projects"."client_id" = $1 LIMIT $2[0m  [["client_id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.4ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Sum (0.2ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mMilestone Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  [1m[36mMilestone Sum (0.2ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendered projects/index.html.erb within layouts/application (Duration: 10.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 11.3ms | GC: 0.0ms)
+Completed 200 OK in 16ms (Views: 9.3ms | ActiveRecord: 2.9ms (11 queries, 1 cached) | GC: 0.0ms)
+
+
+Started GET "/" for ::1 at 2025-08-21 14:37:22 +0530
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 1.4ms | GC: 0.0ms)
+  [1m[36mUser Load (0.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendered layout layouts/application.html.erb (Duration: 6.2ms | GC: 0.0ms)
+Completed 200 OK in 13ms (Views: 9.5ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/dashboard" for ::1 at 2025-08-21 14:37:24 +0530
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mProject Sum (0.7ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "projects" INNER JOIN "milestones" ON "milestones"."project_id" = "projects"."id" WHERE "projects"."client_id" = $1 AND "milestones"."status" IN ($2, $3)[0m  [["client_id", 7], ["status", 1], ["status", 2]]
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mProject Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1 AND "projects"."status" = $2[0m  [["client_id", 7], ["status", 1]]
+  [1m[36mProject Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.3ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 7.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 8.3ms | GC: 0.0ms)
+Completed 200 OK in 16ms (Views: 7.0ms | ActiveRecord: 3.1ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/projects" for ::1 at 2025-08-21 14:37:27 +0530
+Processing by ProjectsController#index as HTML
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendering layout layouts/application.html.erb
+  Rendering projects/index.html.erb within layouts/application
+  [1m[36mProject Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "projects" WHERE "projects"."client_id" = $1 LIMIT $2[0m  [["client_id", 7], ["LIMIT", 1]]
+  [1m[36mProject Load (0.3ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."client_id" = $1[0m  [["client_id", 7]]
+  [1m[36mMilestone Load (0.4ms)[0m  [1m[34mSELECT "milestones".* FROM "milestones" WHERE "milestones"."project_id" IN ($1, $2)[0m  [["project_id", 4], ["project_id", 6]]
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2)[0m  [["id", 9], ["id", 10]]
+  [1m[36mMilestone Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mMilestone Sum (0.2ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 4]]
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mMilestone Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  [1m[36mMilestone Sum (0.2ms)[0m  [1m[34mSELECT SUM("milestones"."amount_cents") FROM "milestones" WHERE "milestones"."project_id" = $1[0m  [["project_id", 6]]
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  Rendered projects/index.html.erb within layouts/application (Duration: 9.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 10.9ms | GC: 0.0ms)
+Completed 200 OK in 14ms (Views: 9.1ms | ActiveRecord: 2.6ms (11 queries, 1 cached) | GC: 0.0ms)
+
+

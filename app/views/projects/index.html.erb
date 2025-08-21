@@ -1,0 +1,119 @@
+<div class="bg-white shadow rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          <%= current_user.client? ? 'My Projects' : 'Projects' %>
+        </h3>
+        <p class="mt-1 text-sm text-gray-500">
+          <%= current_user.client? ? 'Projects you\'ve created as a client.' : 'Projects you\'re working on as a developer.' %>
+        </p>
+      </div>
+      <% if current_user.client? %>
+        <%= link_to new_project_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" do %>
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          New Project
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="mt-8">
+  <% if @projects.any? %>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <% @projects.each do |project| %>
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div class="ml-4 flex-1">
+                <h4 class="text-lg font-medium text-gray-900">
+                  <%= link_to project.title, project_path(project), class: "hover:text-blue-600" %>
+                </h4>
+                <p class="text-sm text-gray-500">
+                  <%= truncate(project.description, length: 100) %>
+                </p>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">
+                  <%= current_user.client? ? 'Developer:' : 'Client:' %>
+                </span>
+                <span class="font-medium text-gray-900">
+                  <%= current_user.client? ? project.developer.email : project.client.email %>
+                </span>
+              </div>
+              
+              <div class="mt-2 flex items-center justify-between text-sm">
+                <span class="text-gray-500">Status:</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                  <%= case project.status
+                      when 'draft'
+                        'bg-gray-100 text-gray-800'
+                      when 'active'
+                        'bg-green-100 text-green-800'
+                      when 'completed'
+                        'bg-blue-100 text-blue-800'
+                      when 'cancelled'
+                        'bg-red-100 text-red-800'
+                      end %>">
+                  <%= project.status.titleize %>
+                </span>
+              </div>
+              
+              <div class="mt-2 flex items-center justify-between text-sm">
+                <span class="text-gray-500">Milestones:</span>
+                <span class="font-medium text-gray-900">
+                  <%= project.milestones.count %>
+                </span>
+              </div>
+              
+              <div class="mt-2 flex items-center justify-between text-sm">
+                <span class="text-gray-500">Total Value:</span>
+                <span class="font-medium text-gray-900">
+                  $<%= number_with_precision(project.total_milestone_amount / 100.0, precision: 2) %>
+                </span>
+              </div>
+            </div>
+            
+            <div class="mt-6 flex justify-between">
+              <%= link_to "View Details", project_path(project), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+              <% if current_user.client? && project.client == current_user %>
+                <%= link_to "Edit", edit_project_path(project), class: "text-gray-600 hover:text-gray-800 text-sm font-medium" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No projects</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        <%= current_user.client? ? 'Get started by creating a new project.' : 'You don\'t have any projects yet.' %>
+      </p>
+      <% if current_user.client? %>
+        <div class="mt-6">
+          <%= link_to new_project_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" do %>
+            <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            New Project
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

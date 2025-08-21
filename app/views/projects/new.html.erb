@@ -1,0 +1,54 @@
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="mb-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Create New Project</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          Create a new project and assign it to a developer.
+        </p>
+      </div>
+
+      <%= form_with model: @project, local: true, class: "space-y-6" do |form| %>
+        <% if @project.errors.any? %>
+          <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <h4 class="font-medium">Please fix the following errors:</h4>
+            <ul class="mt-2 list-disc list-inside">
+              <% @project.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :title, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_field :title, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "Enter project title" %>
+        </div>
+
+        <div>
+          <%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.text_area :description, rows: 4, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "Describe your project requirements..." %>
+        </div>
+
+        <div>
+          <%= form.label :developer_id, "Assign to Developer", class: "block text-sm font-medium text-gray-700" %>
+          <%= form.collection_select :developer_id, User.developer, :id, :email, 
+              { prompt: "Select a developer" }, 
+              { class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" } %>
+        </div>
+
+        <div>
+          <%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
+          <%= form.select :status, Project.statuses.keys.map { |s| [s.titleize, s] }, 
+              {}, 
+              { class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" } %>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <%= link_to "Cancel", projects_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+          <%= form.submit "Create Project", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

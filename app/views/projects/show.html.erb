@@ -1,0 +1,201 @@
+<div class="bg-white shadow rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="flex justify-between items-start">
+      <div class="flex-1">
+        <h3 class="text-2xl font-bold text-gray-900"><%= @project.title %></h3>
+        <p class="mt-2 text-gray-600"><%= @project.description %></p>
+        
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Status</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                <%= case @project.status
+                    when 'draft'
+                      'bg-gray-100 text-gray-800'
+                    when 'active'
+                      'bg-green-100 text-green-800'
+                    when 'completed'
+                      'bg-blue-100 text-blue-800'
+                    when 'cancelled'
+                      'bg-red-100 text-red-800'
+                    end %>">
+                <%= @project.status.titleize %>
+              </span>
+            </dd>
+          </div>
+          
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Client</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @project.client.email %></dd>
+          </div>
+          
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Developer</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @project.developer.email %></dd>
+          </div>
+        </div>
+      </div>
+      
+      <div class="ml-6 flex space-x-3">
+        <% if current_user.client? && @project.client == current_user %>
+          <%= link_to edit_project_path(@project), class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+            <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit
+          <% end %>
+        <% end %>
+        
+        <%= link_to projects_path, class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Milestones Section -->
+<div class="mt-8">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h4 class="text-lg font-medium text-gray-900">Milestones</h4>
+          <p class="mt-1 text-sm text-gray-500">
+            Track progress and manage payments for each milestone.
+          </p>
+        </div>
+        
+        <% if current_user.client? && @project.client == current_user %>
+          <button type="button" onclick="document.getElementById('newMilestoneForm').classList.toggle('hidden')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+            <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Milestone
+          </button>
+        <% end %>
+      </div>
+
+      <!-- New Milestone Form -->
+      <% if current_user.client? && @project.client == current_user %>
+        <div id="newMilestoneForm" class="hidden mb-6 p-4 bg-gray-50 rounded-lg">
+          <%= form_with model: [@project, @new_milestone], local: true, class: "space-y-4" do |form| %>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div>
+                <%= form.label :title, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :title, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "Milestone title" %>
+              </div>
+              
+              <div>
+                <%= form.label :amount_cents, "Amount (USD)", class: "block text-sm font-medium text-gray-700" %>
+                <%= form.number_field :amount_cents, step: 100, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "1000" %>
+                <p class="mt-1 text-xs text-gray-500">Amount in cents (e.g., 1000 = $10.00)</p>
+              </div>
+              
+              <div>
+                <%= form.label :currency, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.select :currency, [['USD', 'USD'], ['EUR', 'EUR'], ['GBP', 'GBP'], ['INR', 'INR']], {}, { class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" } %>
+              </div>
+            </div>
+            
+            <div>
+              <%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.text_area :description, rows: 3, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "Describe what this milestone includes..." %>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+              <button type="button" onclick="document.getElementById('newMilestoneForm').classList.add('hidden')" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Cancel
+              </button>
+              <%= form.submit "Create Milestone", class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Milestones List -->
+      <% if @milestones.any? %>
+        <div class="space-y-4">
+          <% @milestones.each do |milestone| %>
+            <div class="border border-gray-200 rounded-lg p-4">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center space-x-3">
+                    <h5 class="text-lg font-medium text-gray-900"><%= milestone.title %></h5>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                      <%= case milestone.status
+                          when 'pending'
+                            'bg-gray-100 text-gray-800'
+                          when 'funded'
+                            'bg-yellow-100 text-yellow-800'
+                          when 'completed'
+                            'bg-blue-100 text-blue-800'
+                          when 'released'
+                            'bg-green-100 text-green-800'
+                          when 'refunded'
+                            'bg-red-100 text-red-800'
+                          end %>">
+                      <%= milestone.status.titleize %>
+                    </span>
+                  </div>
+                  
+                  <p class="mt-1 text-sm text-gray-600"><%= milestone.description %></p>
+                  
+                  <div class="mt-2 flex items-center space-x-6 text-sm text-gray-500">
+                    <span>Amount: $<%= number_with_precision(milestone.amount_cents / 100.0, precision: 2) %></span>
+                    <span>Currency: <%= milestone.currency %></span>
+                    <span>Created: <%= milestone.created_at.strftime("%B %d, %Y") %></span>
+                  </div>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                  <% if current_user.client? && @project.client == current_user %>
+                    <% if milestone.pending? %>
+                      <%= button_to fund_project_milestone_path(@project, milestone), method: :post, class: "inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700" do %>
+                        Fund
+                      <% end %>
+                    <% elsif milestone.completed? %>
+                      <%= button_to release_project_milestone_path(@project, milestone), method: :post, class: "inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700" do %>
+                        Release
+                      <% end %>
+                    <% elsif milestone.funded? %>
+                      <%= button_to refund_project_milestone_path(@project, milestone), method: :post, class: "inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700" do %>
+                        Refund
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                  
+                  <% if current_user.developer? && @project.developer == current_user %>
+                    <% if milestone.funded? %>
+                      <%= button_to complete_project_milestone_path(@project, milestone), method: :post, class: "inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700" do %>
+                        Mark Complete
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                  
+                  <% if current_user.client? && @project.client == current_user %>
+                    <%= link_to "Edit", "#", class: "text-blue-600 hover:text-blue-800 text-xs font-medium" %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-8">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No milestones</h3>
+          <p class="mt-1 text-sm text-gray-500">
+            <%= current_user.client? && @project.client == current_user ? 'Get started by creating a milestone.' : 'No milestones have been created yet.' %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
